@@ -1,0 +1,55 @@
+import { apiConnector } from "../api/apiConnector";
+import { userAuthentication } from "../api/apis";
+import { setToken, setUser } from "../slices/userSlice";
+import toast from "react-hot-toast";
+
+export function sendOtp(email, setLoading, setOtpSent) {
+  return async () => {
+    setLoading(true);
+    try {
+      const response = await apiConnector('POST', userAuthentication.SENT_OTP, { email });
+      toast.success(response.data.message);
+      setOtpSent(true);
+    } catch (err) {
+      toast.error("Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+}
+
+export function signUp(data, setLoading, navigate) {
+  return async (dispatch) => {
+    setLoading(true);
+    try {
+      const response = await apiConnector('POST', userAuthentication.SIGNUP, data);
+      dispatch(setUser(response.data.user));
+      dispatch(setToken(response.data.token));
+      localStorage.setItem("token", response.data.token);
+      toast.success("Signup successful!");
+      navigate('/');
+    } catch (error) {
+      toast.error("Signup failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+}
+
+export function login(data, setLoading, navigate) {
+  return async (dispatch) => {
+    setLoading(true);
+    try {
+      const response = await apiConnector('POST', userAuthentication.LOGIN, data);
+      dispatch(setUser(response.data.user));
+      dispatch(setToken(response.data.token));
+      localStorage.setItem("token", response.data.token);
+      toast.success("Login successful!");
+      navigate('/');
+    } catch (error) {
+      toast.error("Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+}

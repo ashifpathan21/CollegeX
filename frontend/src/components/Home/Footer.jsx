@@ -21,7 +21,7 @@ const Footer = () => {
             <li><Link to="/" className="hover:text-white transition">Home</Link></li>
             <li><Link to="/products" className="hover:text-white transition">Browse Products</Link></li>
             <li><Link to="/sell" className="hover:text-white transition">Sell Your Product</Link></li>
-            <li><Link to="/contact" className="hover:text-white transition">Contact Us</Link></li>
+            <li><Link to="/" className="hover:text-white transition">Contact Us</Link></li>
           </ul>
         </div>
 
@@ -32,10 +32,10 @@ const Footer = () => {
             <a href="mailto:support@ashifbgmiking.com" className="hover:text-white transition">
               <FaEnvelope />
             </a>
-            <a href="https://github.com/your-github" target="_blank" rel="noopener noreferrer" className="hover:text-white transition">
+            <a href="https://github.com/ashifpathan21/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition">
               <FaGithub />
             </a>
-            <a href="https://linkedin.com/in/your-linkedin" target="_blank" rel="noopener noreferrer" className="hover:text-white transition">
+            <a href="https://www.linkedin.com/in/ashifpathan/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition">
               <FaLinkedin />
             </a>
           </div>

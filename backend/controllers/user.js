@@ -199,3 +199,30 @@ export const login = async (req, res) => {
     });
   }
 };
+
+
+export const getProfile = async (req , res)=> {
+  try {
+     const userId = req.user.id; 
+     const user = await User.findById(userId) 
+    if(!user){
+       return res.status(400).json({
+      success:false,
+      message:'Unauthorized Access' ,
+      error:error.message
+    })
+    }
+    return res.status(200).json({
+      success:true,
+      message:"Success",
+      User:user
+    })
+    
+  } catch (error) {
+    return res.status(400).json({
+      success:false,
+      message:'Unauthorized Access' ,
+      error:error.message
+    })
+  }
+}

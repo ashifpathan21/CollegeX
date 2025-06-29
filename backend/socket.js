@@ -15,6 +15,7 @@ export function initializeSocket(server) {
   io.on('connection', (socket) => {
     socket.on('join', async ({ userId }) => {
       try {
+       
         const user = await User.findByIdAndUpdate(
           userId,
           { socketId: socket.id, active: true },
@@ -76,3 +77,5 @@ export async function getFriendsSocketIds(userId) {
     .map(f => f.user?.socketId)
     .filter(sId => sId);
 }
+
+

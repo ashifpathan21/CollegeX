@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import {useNavigate} from 'react-router-dom'
 import { FaCheckCircle, FaExclamationCircle, FaHeart, FaRegHeart } from "react-icons/fa";
 import { toast } from "react-hot-toast";
-const Product = ({ product }) => {
+const Product = ({ product , setToggle }) => {
+
   const {
     title,
     price,
@@ -19,30 +20,40 @@ const Product = ({ product }) => {
     _id
   } = product;
 
+     
+  if(!title || !price || !images || !description || !condition || !postedBy || !_id){
+      return 
+    }
     const navigate  = useNavigate() ; 
     const [liked, setLiked] = useState(false);
 
-  // Load liked state from localStorage
   useEffect(() => {
-    const likedItems = JSON.parse(localStorage.getItem("likedProducts")) || [];
-    setLiked(likedItems?.includes(_id));
-  }, [_id]);
+  const likedItems = JSON.parse(localStorage.getItem("likedProducts")) || [];
+  setLiked(likedItems.some((item) => item._id === _id));
+}, [_id]);
+
 
   // Handle like toggle and persist to localStorage
-  const toggleLike = () => {
-    let likedItems = JSON.parse(localStorage.getItem("likedProducts")) || [];
+ const toggleLike = (e) => {
 
-    if (liked) {
-      likedItems = likedItems.filter((id) => id !== _id);
-      toast.success('Removed from Wishlisht')
-    } else {
-      likedItems.push(_id);
-      toast.success('Added to Wishlisht')
-    }
+  e.stopPropagation(); // prevents navigation when clicking the heart
 
-    localStorage.setItem("likedProducts", JSON.stringify(likedItems));
-    setLiked(!liked);
-  };
+  let likedItems = JSON.parse(localStorage.getItem("likedProducts")) || [];
+
+  if (liked) {
+    likedItems = likedItems.filter((item) => item._id !== _id);
+    toast.success('Removed from Wishlist');
+  } else {
+    likedItems.push(product);
+    toast.success('Added to Wishlist');
+  }
+  
+  localStorage.setItem("likedProducts", JSON.stringify(likedItems));
+  if(setToggle){
+  setToggle(!liked)}
+  
+  setLiked(!liked);
+};
 
 
 

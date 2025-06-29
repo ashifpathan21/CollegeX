@@ -8,20 +8,8 @@ import { useNavigate } from "react-router-dom";
 const HeroSection = () => {
   const navigate = useNavigate();
 
-  useGSAP(() => {
-    gsap.from(".box", {
-      delay: 0.2,
-      duration: 1,
-      opacity: 0,
-      scale: 0,
-      autoAlpha: 0,
-      y: 80,
-      rotationX: 180,
-      transformOrigin: "0% 50% -50",
-      ease: "back",
-      stagger: 1,
-    });
-  });
+ 
+  
 
   useEffect(() => {
     const texts = [

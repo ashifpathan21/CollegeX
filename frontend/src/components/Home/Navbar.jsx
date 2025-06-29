@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState , useContext , useEffect } from 'react'
+import {SocketContext} from '../../context/SocketContext.jsx'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import logo from '../../assets/logo.png'
@@ -7,6 +8,17 @@ const Navbar = () => {
   const navigate = useNavigate()
   const user = useSelector((state) => state.user.user)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [profileModal , setProfileModal] = useState(false)
+  const [drawerProfileModal , setDrawerProfileModal] = useState(false)
+
+
+  const socket = useContext(SocketContext);  // ✅ correct usage
+  
+ useEffect(() => {
+    if (user && socket) {
+      socket.emit('join', { userId: user._id });
+    }
+  }, [user, socket]); 
 
   const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen)
   const closeDrawer = () => setIsDrawerOpen(false)
@@ -31,12 +43,13 @@ const Navbar = () => {
           <button onClick={() => navigate('/liked-products')} className='text-white font-semibold hover:text-blue-400'>
             <i className="ri-heart-2-fill"></i>
           </button>
-          {user ? (
-            <img src={user?.avatar || ''} className='h-10 w-10 rounded-full object-cover' alt="avatar" />
+          {user?.fullName ? (
+
+            <img onClick={() => setProfileModal(!profileModal)} src={user?.profilePic || ''} className='h-10 w-10 rounded-full object-cover' alt="avatar" />
           ) : (
             <>
-              <button onClick={() => navigate('/login')} className='text-white font-semibold hover:text-blue-400'>Login</button>
-              <button onClick={() => navigate('/signup')} className='text-white font-semibold hover:text-blue-400'>Signup</button>
+              <button onClick={() => navigate('/login')} className='text-white font-semibold hover:text-blue-400'>LogIn</button>
+              <button onClick={() => navigate('/signup')} className='text-white font-semibold hover:text-blue-400'>SignUp</button>
             </>
           )}
         </div>
@@ -62,8 +75,12 @@ const Navbar = () => {
           <button onClick={() => { navigate('/liked-products'); closeDrawer(); }} className='hover:text-blue-400'>
             <i className="ri-heart-2-fill"></i> Liked
           </button>
-          {user ? (
-            <img src={user?.avatar || ''} className='h-12 w-12 rounded-full object-cover' alt="avatar" />
+          {user?.fullName ? (
+            <div className='p-2 px-4 flex gap-3 items-center '>
+                <img src={user?.profilePic || ''} className='h-12 w-12 rounded-full object-cover' alt="avatar" />
+                <p className='text-xl font-semibold '>{user?.fullName}</p>
+            </div>
+          
           ) : (
             <>
               <button onClick={() => { navigate('/login'); closeDrawer(); }} className='hover:text-blue-400'>Login</button>
@@ -77,6 +94,16 @@ const Navbar = () => {
       {isDrawerOpen && (
         <div onClick={closeDrawer} className='fixed inset-0 bg-black bg-opacity-30 z-40'></div>
       )}
+
+
+      {
+        profileModal &&( 
+        <div className=' w-40  text-white flex flex-col gap-3 p-3 bg-black absolute top-17 z-20  right-8 rounded-xl  '>
+           <button onClick={() => navigate('/profile')
+           } className='p-2 text-white font-semibold '> My Profile</button>
+           <button onClick={() => navigate('/logout')} className='p-2 text-white font-semibold'>LogOut</button>
+        </div>)
+      }
     </>
   )
 }

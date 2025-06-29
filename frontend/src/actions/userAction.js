@@ -3,11 +3,12 @@ import { userAuthentication } from "../api/apis";
 import { setToken, setUser } from "../slices/userSlice";
 import toast from "react-hot-toast";
 
-export function sendOtp(email, setLoading, setOtpSent) {
+export function sendOtp(collegeEmail, setLoading, setOtpSent ) {
   return async () => {
     setLoading(true);
+   
     try {
-      const response = await apiConnector('POST', userAuthentication.SENT_OTP, { email });
+      const response = await apiConnector('POST', userAuthentication.SENT_OTP, { collegeEmail });
       toast.success(response.data.message);
       setOtpSent(true);
     } catch (err) {
@@ -50,6 +51,25 @@ export function login(data, setLoading, navigate) {
       toast.error("Login failed");
     } finally {
       setLoading(false);
+    }
+  };
+}
+
+
+export function getProfile(token) {
+  return async (dispatch) => {
+    try {
+      const response = await apiConnector('POST', userAuthentication.GET_PROFILE, null , {
+          Authorization: `Bearer ${token}`
+      });
+     
+      dispatch(setUser(response.data?.User));
+       return response.data?.User 
+    } catch (error) {
+      toast.error("This is a Protected Route for Users");
+     
+    } finally {
+     
     }
   };
 }

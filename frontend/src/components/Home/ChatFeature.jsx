@@ -77,7 +77,7 @@ const OrbitingIcon = ({ icon: Icon, radius = 120, duration = 6, size = 40, color
           transition={{ duration: 0.6 }}
         >
             <motion.div
-  className="top-0 left-1/2 overflow-hidden shadow-md"
+  className="top-0 left-1/2 overflow-hidden "
   animate={{
     y: [0, -10, 0],
     rotate: [0, 360], // 🌍 slow self-rotation

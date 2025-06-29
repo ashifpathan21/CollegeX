@@ -1,27 +1,33 @@
-// 📁 src/context/SocketContext.jsx
-import React, { createContext, useEffect } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
 export const SocketContext = createContext(null);
 
-const socket =  io(import.meta.env.VITE_SOCKET_URL, {
-  transports: ['websocket'], // Optional, for forcing WebSocket
-});
-
 const SocketProvider = ({ children }) => {
+  const [socket, setSocket] = useState(null);
+
   useEffect(() => {
-       console.log("🔁 Trying to connect to socket...");
-    socket.on('connect', () => {
-      console.log("✅ Socket connected (test)");
+    const newSocket = io(import.meta.env.VITE_SOCKET_URL, {
+      withCredentials: true,
+      transports: ['websocket'],
     });
 
-    socket.on('disconnect', () => {
-      console.log("❌ Socket disconnected (test)");
+    newSocket.on('connect', () => {
+      console.log('✅ Connected to socket:', newSocket.id);
     });
 
+    newSocket.on('connect_error', (err) => {
+      console.error('❌ Connection error:', err.message);
+    });
+
+    newSocket.on('disconnect', () => {
+      console.log('❌ Socket disconnected');
+    });
+
+    setSocket(newSocket);
 
     return () => {
-      socket.disconnect(); // 🧼 Clean up on unmount
+      newSocket.disconnect();
     };
   }, []);
 

@@ -3,7 +3,8 @@ const BASE_URL = import.meta.env.VITE_BASE_URL
 export const userAuthentication = {
     SENT_OTP:BASE_URL+'/user/send-otp',
     SIGNUP:BASE_URL+'/user/signup',
-    LOGIN:BASE_URL+'/user/login'
+    LOGIN:BASE_URL+'/user/login',
+    GET_PROFILE:BASE_URL+'/user/profile'
 }
 
 export const productEndpoints = {

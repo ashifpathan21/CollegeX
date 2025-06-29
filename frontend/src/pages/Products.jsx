@@ -19,8 +19,8 @@ const Products = () => {
 
     <div className='grid grid-cols-1 p-4 px-8 md:grid-cols-2 lg:grid-cols-3 mt-10 '>
      {
-      products?.map(product => 
-        <Product product={product} />
+      products?.map((product , i )=> 
+        <Product key={i} product={product} />
       )
      }
 

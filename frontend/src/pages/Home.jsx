@@ -8,16 +8,19 @@ import { getAllProducts} from '../actions/productAction.js'
 import { fetchCategories} from '../actions/categoryAction.js' 
 import { fetchStates , fetchColleges } from '../actions/detailsAction.js' 
 import {useSelector , useDispatch } from 'react-redux' 
-
+import {getProfile} from '../actions/userAction.js'
 
 const Home = () => {
-   const socket = useContext(SocketContext);  // ✅ correct usage
-    console.log(socket);
+  
    
    const dispatch = useDispatch() ; 
-   
+     const token = localStorage.getItem('token')
 
       useEffect(() => {
+    
+       if(token){
+         dispatch(getProfile(token))
+       }
       dispatch(getAllProducts()) ;
       dispatch(fetchCategories()) ;
       
@@ -25,7 +28,7 @@ const Home = () => {
 
 
   return (
-    <div className='h-full w-screen overflow-x-hidden bg-[#080b19f2] min-h-screen '>
+    <div className='h-full w-screen relative overflow-x-hidden bg-[#080b19f2] min-h-screen '>
       <Navbar />
       <HeroSection />
       <ChatFeature />

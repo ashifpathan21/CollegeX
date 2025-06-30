@@ -1,70 +1,53 @@
 import Message from '../models/Message.js';
 import User from '../models/User.js';
-import Product from '../models/Product.js';
-import { getSocketId, sendMessageToSocketId } from '../socket.js';
 
-// ======= SEND MESSAGE =========
 export const sendMessage = async (req, res) => {
   try {
-    const senderId = req.user.id; // From JWT middleware
-    const { receiverId, productId, content } = req.body;
+    const { receiver, product, text } = req.body;
+    const sender = req.user.id;
 
-    if (!receiverId || !productId || !content) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+    if (!receiver || !product || !text) {
+      return res.status(400).json({ success: false, message: "Missing fields" });
     }
 
-    // Validate users
-    const sender = await User.findById(senderId);
-    const receiver = await User.findById(receiverId);
-    if (!sender || !receiver) {
-      return res.status(404).json({ success: false, message: "Sender or receiver not found" });
-    }
-
-    // Validate product
-    const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
-    }
-
-    // Save the message
+    // Create message
     const message = await Message.create({
-      sender: senderId,
-      receiver: receiverId,
-      product: productId,
-      content,
+      sender,
+      receiver,
+      product,
+      content:text,
+      isSeen: false,
     });
 
-    // Add to sender's friend list if not already there
-    if (!sender.friends.includes(receiverId)) {
-      sender.friends.push(receiverId);
-      await sender.save();
-    }
+    // Helper: update friend record
+    const updateFriendArray = async (userId, friendId, productId, messageId) => {
+      const user = await User.findById(userId);
+      const existing = user.friends.find(
+        (f) =>
+          f.user.toString() === friendId &&
+          f.product.toString() === productId
+      );
 
-    // Add to receiver's friend list if not already there
-    if (!receiver.friends.includes(senderId)) {
-      receiver.friends.push(senderId);
-      await receiver.save();
-    }
+      if (existing) {
+        existing.messages.push(messageId);
+      } else {
+        user.friends.push({
+          user: friendId,
+          product: productId,
+          messages: [messageId],
+        });
+      }
 
-    // Emit message via socket
-    const receiverSocketId = await getSocketId(receiverId);
-    if (receiverSocketId) {
-      sendMessageToSocketId(receiverSocketId, {
-        event: 'newMessage',
-        data: {
-          message,
-          from: senderId,
-        },
-      });
-    }
+      await user.save();
+    };
 
-    res.status(200).json({
-      success: true,
-      message: "Message sent successfully",
-      data: message,
-    });
+    // Update for sender and receiver
+    await updateFriendArray(sender, receiver, product, message._id);
+    await updateFriendArray(receiver, sender, product, message._id);
 
+    res.status(201).json({ success: true, message });
   } catch (err) {
+    console.error("Send message error:", err.message);
     res.status(500).json({
       success: false,
       message: "Failed to send message",
@@ -73,7 +56,7 @@ export const sendMessage = async (req, res) => {
   }
 };
 
-// ======= GET CONVERSATION BETWEEN TWO USERS ON A PRODUCT =======
+// ========== GET MESSAGES ========== //
 export const getMessages = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -91,15 +74,41 @@ export const getMessages = async (req, res) => {
       product: productId,
     }).sort({ createdAt: 1 });
 
-    res.status(200).json({
-      success: true,
-      messages,
-    });
-
+    res.status(200).json({ success: true, messages });
   } catch (err) {
     res.status(500).json({
       success: false,
       message: "Could not retrieve messages",
+      error: err.message,
+    });
+  }
+};
+
+// ========== MARK MESSAGES AS SEEN ========== //
+export const markMessagesAsSeen = async (req, res) => {
+  try {
+    const userId = req.user.id;
+ 
+    const { from, productId } = req.body;
+    if (!from || !productId) {
+      return res.status(400).json({ success: false, message: "Sender and Product ID required" });
+    }
+
+    await Message.updateMany(
+      {
+        sender: from,
+        receiver: userId,
+        product: productId,
+        isSeen: false,
+      },
+      { $set: { isSeen: true } }
+    );
+
+    res.status(200).json({ success: true, message: "Messages marked as seen" });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Could not mark messages as seen",
       error: err.message,
     });
   }

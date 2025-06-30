@@ -12,13 +12,30 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true
   },
-  friends:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User'
-  }],
+friends: [
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true,
+    },
+    messages: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Message',
+      }
+    ],
+  }
+],
   password: {
     type: String,
-    required: true
+    required: true,
+    select:false
   },
   socketId:{
    type:String

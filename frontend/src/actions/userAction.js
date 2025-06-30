@@ -1,6 +1,7 @@
 import { apiConnector } from "../api/apiConnector";
 import { userAuthentication } from "../api/apis";
 import { setToken, setUser } from "../slices/userSlice";
+import {  setMyProducts } from "../slices/productSlice";
 import toast from "react-hot-toast";
 
 export function sendOtp(collegeEmail, setLoading, setOtpSent ) {
@@ -42,12 +43,14 @@ export function login(data, setLoading, navigate) {
     setLoading(true);
     try {
       const response = await apiConnector('POST', userAuthentication.LOGIN, data);
+    
       dispatch(setUser(response.data.user));
       dispatch(setToken(response.data.token));
       localStorage.setItem("token", response.data.token);
       toast.success("Login successful!");
       navigate('/');
     } catch (error) {
+
       toast.error("Login failed");
     } finally {
       setLoading(false);

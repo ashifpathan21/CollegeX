@@ -156,7 +156,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ collegeEmail });
+  const user = await User.findOne({ collegeEmail }).select('+password');
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -201,28 +201,43 @@ export const login = async (req, res) => {
 };
 
 
-export const getProfile = async (req , res)=> {
+export const getProfile = async (req, res) => {
   try {
-     const userId = req.user.id; 
-     const user = await User.findById(userId) 
-    if(!user){
-       return res.status(400).json({
-      success:false,
-      message:'Unauthorized Access' ,
-      error:error.message
-    })
+    const userId = req.user.id;
+
+    const user = await User.findById(userId)
+      .populate({
+        path: 'friends.user',
+        select: 'fullName profilePic active branch college isSpammer isVerified ',
+      })
+      .populate({
+        path: 'friends.product',
+        select: 'title price image',
+      })
+      .populate({
+        path: 'friends.messages', // ⚠️ Removed sort & limit here
+      })
+      .populate({
+        path: 'products',
+      });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Unauthorized Access',
+      });
     }
+
     return res.status(200).json({
-      success:true,
-      message:"Success",
-      User:user
-    })
-    
+      success: true,
+      message: 'Success',
+      User: user,
+    });
   } catch (error) {
     return res.status(400).json({
-      success:false,
-      message:'Unauthorized Access' ,
-      error:error.message
-    })
+      success: false,
+      message: 'Unauthorized Access',
+      error: error.message,
+    });
   }
-}
+};

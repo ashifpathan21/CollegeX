@@ -23,7 +23,7 @@ const productSchema = new mongoose.Schema(
     },
     condition: {
       type: String,
-      enum: ['New', 'Like New', 'Used', 'Old'],
+      enum: ['New', 'Like New', 'Used', 'Old' , 'Damaged'],
       default: 'Used',
     },
     category: {

@@ -1,24 +1,40 @@
 import React, { useState , useContext , useEffect } from 'react'
-import {SocketContext} from '../../context/SocketContext.jsx'
-import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useNavigate  } from 'react-router-dom'
+import { useSelector , useDispatch } from 'react-redux'
 import logo from '../../assets/logo.png'
+import {getProfile} from '../../actions/userAction.js'
+import { SocketContext } from '../../context/SocketContext';
 
 const Navbar = () => {
+
+  const socket = useContext(SocketContext);
   const navigate = useNavigate()
-  const user = useSelector((state) => state.user.user)
+  const userDB = useSelector((state) => state.user.user)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [profileModal , setProfileModal] = useState(false)
   const [drawerProfileModal , setDrawerProfileModal] = useState(false)
+  const [user , setUser] = useState(userDB || {})
+   const dispatch = useDispatch() ; 
+   const token = localStorage.getItem('token')
 
+   useEffect(() => {
 
-  const socket = useContext(SocketContext);  // ✅ correct usage
-  
- useEffect(() => {
-    if (user && socket) {
-      socket.emit('join', { userId: user._id });
-    }
-  }, [user, socket]); 
+    const getUser =  async () => {
+        if(token){
+        const User =  await dispatch(getProfile(token))
+        setUser(User)
+       }
+   }
+     
+   getUser() 
+   }, [token])
+   
+useEffect(() => {
+  if(user._id && socket)
+ socket.emit('join', { userId: user?._id });
+
+ }, [socket, user])
+ 
 
   const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen)
   const closeDrawer = () => setIsDrawerOpen(false)
@@ -69,23 +85,34 @@ const Navbar = () => {
 
         {/* Drawer Items */}
         <div className='flex flex-col gap-6 px-6'>
+
           <input type="text" placeholder='Search here' className='py-2 px-4 bg-white text-black rounded-lg' />
-          <button onClick={() => { navigate('/products'); closeDrawer(); }} className='hover:text-blue-400'>Products</button>
-          <button onClick={() => { navigate('/sell'); closeDrawer(); }} className='hover:text-blue-400'>Sell</button>
-          <button onClick={() => { navigate('/liked-products'); closeDrawer(); }} className='hover:text-blue-400'>
-            <i className="ri-heart-2-fill"></i> Liked
-          </button>
-          {user?.fullName ? (
+          {user?.fullName &&  (
             <div className='p-2 px-4 flex gap-3 items-center '>
                 <img src={user?.profilePic || ''} className='h-12 w-12 rounded-full object-cover' alt="avatar" />
                 <p className='text-xl font-semibold '>{user?.fullName}</p>
             </div>
           
-          ) : (
+          ) }
+          <button onClick={() => { navigate('/products'); closeDrawer(); }} className='hover:text-blue-400'>Products</button>
+          <button onClick={() => { navigate('/sell'); closeDrawer(); }} className='hover:text-blue-400'>Sell</button>
+          <button onClick={() => { navigate('/liked-products'); closeDrawer(); }} className='hover:text-blue-400'>
+            <i className="ri-heart-2-fill"></i> Liked Product
+          </button>
+         
+          { !user?.fullName ?   (
             <>
               <button onClick={() => { navigate('/login'); closeDrawer(); }} className='hover:text-blue-400'>Login</button>
               <button onClick={() => { navigate('/signup'); closeDrawer(); }} className='hover:text-blue-400'>Signup</button>
             </>
+          ) : (
+            <>
+           <button onClick={() => navigate('/profile')
+           } className='p-2 text-white font-semibold '> My Profile</button>
+           <button onClick={() => navigate('/chat')
+           } className='p-2 text-white font-semibold '> Chats</button>
+           <button onClick={() => navigate('/logout')} className='p-2 text-white font-semibold'>LogOut</button>
+        </>
           )}
         </div>
       </div>
@@ -101,6 +128,8 @@ const Navbar = () => {
         <div className=' w-40  text-white flex flex-col gap-3 p-3 bg-black absolute top-17 z-20  right-8 rounded-xl  '>
            <button onClick={() => navigate('/profile')
            } className='p-2 text-white font-semibold '> My Profile</button>
+           <button onClick={() => navigate('/chat')
+           } className='p-2 text-white font-semibold '> Chats</button>
            <button onClick={() => navigate('/logout')} className='p-2 text-white font-semibold'>LogOut</button>
         </div>)
       }

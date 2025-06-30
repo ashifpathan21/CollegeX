@@ -3,12 +3,28 @@ import {useSelector , useDispatch } from 'react-redux'
 import Product from '../components/Product/Product.jsx'
 import Filter from '../components/Product/Filter.jsx'
 import Navbar from '../components/Home/Navbar.jsx' 
+import { getAllProducts} from '../actions/productAction.js' 
+import { fetchCategories} from '../actions/categoryAction.js' 
 
 
 const Products = () => {
    const dispatch = useDispatch() ; 
    const {allProducts} = useSelector(state => state.product) ;
-  console.log(allProducts)
+ 
+  
+    useEffect(() => {
+    const getProduct = async  () => {
+    
+     const productDB = await  dispatch(getAllProducts()) ;
+     setProducts(productDB)
+     await dispatch(fetchCategories()) ;
+      
+    }
+
+    getProduct()
+    } , [])
+
+
   const [products , setProducts] = useState(allProducts || []) 
 
   return (

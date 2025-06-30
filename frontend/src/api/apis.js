@@ -26,5 +26,6 @@ export const detailsEndpoints = {
 
 export const messageEndpoints = {
     SEND_MESSAGE : BASE_URL + '/message/send' ,
-    GET_ALL_MESSAGE: BASE_URL+ '/message/all'
+    GET_ALL_MESSAGE: BASE_URL+ '/message/all',
+    SEEN_MESSAGES: BASE_URL+'/message/seen'
 }

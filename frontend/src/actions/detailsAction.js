@@ -7,8 +7,7 @@ export function fetchStates() {
   return async (dispatch) => {
     try {
       const response = await apiConnector('GET', detailsEndpoints.GET_STATES);
-      console.log(response)
-      dispatch(setStates(response.data.data));
+      dispatch(setStates(response.data));
     } catch (error) {
       toast.error("Failed to load states");
     }

@@ -36,6 +36,7 @@ const UserProtectedWrapper = ({ children }) => {
   }
 
   if (!user) {
+    localStorage.removeItem('token')
     navigate('/login');
     return null;
   }

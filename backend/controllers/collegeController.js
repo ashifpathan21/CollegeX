@@ -1,17 +1,22 @@
 import axios from 'axios';
 
-const CSC_API_KEY = 'YOUR_COUNTRYSTATECITY_API_KEY'; // 👉 मिलेगा https://countrystatecity.in
+const API_BASE = 'https://api.countrystatecity.in/v1';
+const COUNTRY_CODE = 'IN'; // India
 
-// ✅ Get All States in India
 export const getStates = async (req, res) => {
   try {
     const response = await axios.get(
-      'https://api.countrystatecity.in/v1/countries/IN/states'
+      `${API_BASE}/countries/${COUNTRY_CODE}/states`,
+      {
+        headers: {
+          'X-CSCAPI-KEY': process.env.COUNTRY_API_KEY,
+        },
+      }
     );
 
-    const states = response.data.map(state => ({
+    const states = response.data.map((state) => ({
       id: state.iso2,
-      name: state.name
+      name: state.name,
     }));
 
     res.status(200).json(states);

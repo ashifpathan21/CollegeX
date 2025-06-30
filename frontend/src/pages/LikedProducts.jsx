@@ -10,7 +10,6 @@ const LikedProducts = () => {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        console.log(parsed)
         setLikedProducts(parsed);
       } catch (e) {
         console.error("Failed to parse likedProducts:", e);

@@ -27,7 +27,7 @@ export const createProduct = async (req, res) => {
     // ==== Gemini ML: Estimate Price ====
     const estimatedPrice = await estimatePriceWithGemini({ title, description, condition, category });
     const priceRatio = price / estimatedPrice;
-    const isSpam = priceRatio < 0.5 || priceRatio > 1.5;
+    const isSpam = priceRatio < 0.2 || priceRatio > 1;
 
     // ==== Gemini ML: Live Image Verification ====
     let isVerifiedRealPhoto = false;

@@ -21,9 +21,10 @@ const ProductDetail = () => {
   };
 
   const handleMessageSeller = () => {
+  
     navigate(`/chat`, {
       state: {
-        receiverId: product.postedBy?._id,
+        receiver: product?.postedBy,
         product,
       },
     });
@@ -81,9 +82,9 @@ const ProductDetail = () => {
 
           <button
             onClick={handleMessageSeller}
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+            className="mt-4 bg-blue-600 font-semibold text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
           >
-            Message Seller
+            Make a Deal
           </button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { apiConnector } from "../api/apiConnector";
 import { detailsEndpoints } from "../api/apis";
-import { setStates, setColleges } from "../slices/detailsSlice";
+import { setStates, setColleges } from "../Slices/detailsSlice";
 import toast from "react-hot-toast";
 
 export function fetchStates() {

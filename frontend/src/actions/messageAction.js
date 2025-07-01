@@ -1,6 +1,6 @@
 import { apiConnector } from "../api/apiConnector";
 import { messageEndpoints } from "../api/apis";
-import { setAllMessages } from "../slices/messageSlice";
+import { setAllMessages } from "../Slices/messageSlice";
 import toast from "react-hot-toast";
 
 export function sendMessage(data, token) {

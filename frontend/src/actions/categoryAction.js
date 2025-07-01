@@ -1,6 +1,6 @@
 import { apiConnector } from "../api/apiConnector";
 import { categoryEndpoints } from "../api/apis";
-import { setCategories } from "../slices/categorySlice";
+import { setCategories } from "../Slices/categorySlice";
 import toast from "react-hot-toast";
 
 export function fetchCategories() {

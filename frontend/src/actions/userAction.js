@@ -1,7 +1,7 @@
 import { apiConnector } from "../api/apiConnector";
 import { userAuthentication } from "../api/apis";
-import { setToken, setUser } from "../slices/userSlice";
-import {  setMyProducts } from "../slices/productSlice";
+import { setToken, setUser } from "../Slices/userSlice";
+import {  setMyProducts } from "../Slices/productSlice";
 import toast from "react-hot-toast";
 
 export function sendOtp(collegeEmail, setLoading, setOtpSent ) {

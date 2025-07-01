@@ -1,6 +1,6 @@
 import { apiConnector } from "../api/apiConnector";
 import { productEndpoints } from "../api/apis";
-import { setAllProducts, setMyProducts } from "../slices/productSlice";
+import { setAllProducts, setMyProducts } from "../Slices/productSlice";
 import toast from "react-hot-toast";
 
 export function createProduct(data, token, navigate) {

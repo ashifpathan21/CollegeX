@@ -1,8 +1,8 @@
 import express from 'express';
-import { getStates, getCollegesByState } from '../controllers/collegeController.js';
+import { getStates, getLocation } from '../controllers/collegeController.js';
 const router = express.Router();
 
 router.get('/states', getStates);             // /api/colleges/states
-router.get('/:state', getCollegesByState);    // /api/colleges/:state
+router.get('/:query', getLocation);    // /api/colleges/:state
 
 export default router;

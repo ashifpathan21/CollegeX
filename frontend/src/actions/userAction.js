@@ -76,3 +76,26 @@ export function getProfile(token) {
     }
   };
 }
+
+
+export function updateProfile(updatedData, token) {
+  return async (dispatch) => {
+    try {
+      const response = await apiConnector(
+        "PUT",
+        userAuthentication.UPDATE_PROFILE,
+        updatedData,
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
+
+      dispatch(setUser(response.data?.updatedUser));
+      toast.success("Profile updated successfully!");
+      return response.data?.updatedUser;
+    } catch (error) {
+      toast.error("Failed to update profile");
+      console.log("UPDATE_USER_PROFILE_ERROR:", error);
+    }
+  };
+}

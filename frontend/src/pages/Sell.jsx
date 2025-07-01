@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect  } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createProduct } from '../actions/productAction';
 import { uploadToCloudinary } from '../utils/uploadToCloudinary';
@@ -12,6 +12,13 @@ const Sell = () => {
   const token = localStorage.getItem("token");
 
   const { categories } = useSelector((state) => state.category);
+  const [states ,setStates] = useState([])
+
+    const state = useSelector(state => state?.details?.states) 
+   useEffect(() => 
+  {
+    setStates(state)
+  }, [state])
 
   const [formData, setFormData] = useState({
     title: '',
@@ -93,7 +100,8 @@ const Sell = () => {
         ...formData,
         images: uploadedImages,
         liveImageUrl: uploadedLiveImage,
-        category: selectedSubCategory || selectedCategory,
+        category: selectedCategory,
+        subcategory:selectedSubCategory
       };
 
       await dispatch(createProduct(finalData, token, navigate));
@@ -143,7 +151,7 @@ const Sell = () => {
               name="condition"
               value={formData.condition}
               onChange={handleChange}
-            className="p-2 border text-cyan-300 bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="p-2 border w-full  text-cyan-300 bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
        >
               <option value="">Select Condition</option>
               <option value="New">New</option>
@@ -155,15 +163,23 @@ const Sell = () => {
           </div>
 
           {/* Location */}
-          <div>
-            <label className="block text-sm mb-1">Location</label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              className="w-full bg-transparent border border-cyan-400 px-3 py-2 rounded text-white"
-            />
+          <div className='flex gap-3  items-center '>
+              <label htmlFor="state" className="text-sm text-white">Select State:</label>
+      <select
+        id="state"
+      name='location'
+      value={formData.location}
+      onChange={handleChange}
+  className="p-2  border text-cyan-300 bg-slate-800 rounded-lg focus:outline-none w-full focus:ring-2 focus:ring-blue-400"
+      >
+        <option value="">-- Choose State --</option>
+        {states?.map((state) => (
+          <option key={state.id} value={state.name}>
+            {state.name}
+          </option>
+        ))}
+      </select>
+
           </div>
 
           {/* Description */}
@@ -194,7 +210,7 @@ const Sell = () => {
           </div>
 
           {/* Subcategory Dropdown */}
-          {toSubCat?.subCategories?.length > 0 && (
+          {toSubCat?.subcategories?.length > 0 && (
             <div>
               <label className="block text-sm mb-1">Sub Category</label>
               <select
@@ -203,7 +219,7 @@ const Sell = () => {
               className="p-2 border text-cyan-300 bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
      >
                 <option value="">Select Sub Category</option>
-                {toSubCat.subCategories.map((sub) => (
+                {toSubCat?.subcategories?.map((sub) => (
                   <option key={sub._id} value={sub._id}>{sub.name}</option>
                 ))}
               </select>

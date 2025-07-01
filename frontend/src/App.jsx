@@ -8,6 +8,7 @@ import Chat from './pages/Chat.jsx'
 import Login from './pages/Login.jsx'
 import Logout from './pages/Logout.jsx'
 import Profile from './pages/Profile.jsx'
+import SearchProduct from './pages/SearchProduct.jsx'
 import LikedProducts from './pages/LikedProducts.jsx'
 import Signup from './pages/Signup.jsx'
 import OtherPage from './pages/OtherPage.jsx'
@@ -36,6 +37,7 @@ const App = () => {
           } />
 
         <Route path='/products' element={<Products/>} />
+        <Route path='/searchProducts' element={<SearchProduct/>} />
         <Route path='/myProducts' element={
             <UserProtectedWrapper>
              <MyProducts/>

@@ -1,5 +1,6 @@
 import axios from 'axios';
-
+import {config} from 'dotenv'
+config()
 const API_BASE = 'https://api.countrystatecity.in/v1';
 const COUNTRY_CODE = 'IN'; // India
 
@@ -26,22 +27,23 @@ export const getStates = async (req, res) => {
   }
 };
 
-// 🔧 Mock colleges (fake data for testing)
-export const getCollegesByState = async (req, res) => {
+
+export const getLocation = async (req, res) => {
+  const { query } = req.params;
+    
+  const apiKey = process.env.MAP_API_KEY
+    const url = `https://maps.gomaps.pro/maps/api/place/autocomplete/json?types=establishment&region=IN&key=${apiKey}&input=${query}`
   try {
-    const { state } = req.params;
-    const decodedState = decodeURIComponent(state);
+    
 
-    // Mock colleges just for demo
-    const colleges = [
-      { name: 'Indian Institute of Technology', location: decodedState },
-      { name: 'National Institute of Technology', location: decodedState },
-      { name: 'State Engineering College', location: decodedState },
-    ];
+    const response = await axios.get(url);
+   
+     const data =  response?.data?.predictions?.map(prediction => prediction.structured_formatting.main_text);
 
-    res.status(200).json(colleges);
-  } catch (error) {
-    console.error('Error fetching colleges:', error.message);
-    res.status(500).json({ error: 'Failed to fetch colleges' });
+
+    return res.json({ success: true, data});
+  } catch (err) {
+    console.error("ERR", err.response?.status || err.message);
+    return res.status(500).json({ success: false, message: "Failed to fetch colleges", error: err.message });
   }
 };

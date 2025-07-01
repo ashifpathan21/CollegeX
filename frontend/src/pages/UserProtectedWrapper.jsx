@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getProfile } from '../actions/userAction.js';
-
+import {toast} from 'react-hot-toast'
 const UserProtectedWrapper = ({ children }) => {
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ const UserProtectedWrapper = ({ children }) => {
 
   const [loading, setLoading] = useState(true);
   const user = useSelector((state) => state.user.user); // assuming userSlice contains "user"
-
+ 
   useEffect(() => {
     const verifyUser = async () => {
         setLoading(true) 

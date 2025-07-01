@@ -241,3 +241,38 @@ export const getProfile = async (req, res) => {
     });
   }
 };
+
+
+export const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id; // JWT middleware se user.id aayega
+    const updates = req.body;
+
+    const allowedFields = ["fullName",  "profilePic" ,  "college", "collegeEmail", "branch", "year", "contactNumber"];
+    const filteredUpdates = {};
+
+    for (let field of allowedFields) {
+      if (updates[field] !== undefined) {
+        filteredUpdates[field] = updates[field];
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      filteredUpdates,
+      { new: true }
+    ).select("-password");
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      updatedUser,
+    });
+  } catch (err) {
+    console.error("UPDATE_PROFILE_ERROR:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update profile",
+    });
+  }
+};

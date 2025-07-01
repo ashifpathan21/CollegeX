@@ -4,7 +4,8 @@ export const userAuthentication = {
     SENT_OTP:BASE_URL+'/user/send-otp',
     SIGNUP:BASE_URL+'/user/signup',
     LOGIN:BASE_URL+'/user/login',
-    GET_PROFILE:BASE_URL+'/user/profile'
+    GET_PROFILE:BASE_URL+'/user/profile',
+    UPDATE_PROFILE:BASE_URL+'/user/update'
 }
 
 export const productEndpoints = {
@@ -12,7 +13,8 @@ export const productEndpoints = {
     UPDATE_PRODUCT : BASE_URL+'/product' ,
     DELETE_PRODUCT : BASE_URL+'/product' ,
     MY_PRODUCT: BASE_URL+'/product/my' ,
-    GET_ALL_PRODUCTS : BASE_URL+'/product/getAllProduct'
+    GET_ALL_PRODUCTS : BASE_URL+'/product/getAllProduct',
+    SEARCH_PRODUCTS: BASE_URL + '/product/search'
 }
 
 export const categoryEndpoints = {

@@ -81,3 +81,20 @@ export function getMyProducts(token) {
     }
   };
 }
+
+
+export function searchProducts(query) {
+  return async () => {
+    try {
+      const response = await apiConnector(
+        'GET',
+        `${productEndpoints.SEARCH_PRODUCTS}?query=${encodeURIComponent(query)}`
+      );
+
+      return response.data.products;
+    } catch (err) {
+      toast.error("Failed to search products");
+      return [];
+    }
+  };
+}

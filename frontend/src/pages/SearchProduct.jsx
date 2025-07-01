@@ -1,5 +1,6 @@
 import React ,{useEffect , useState} from 'react'
 import {useSelector , useDispatch } from 'react-redux' 
+import {useLocation} from 'react-router-dom'
 import Product from '../components/Product/Product.jsx'
 import Filter from '../components/Product/Filter.jsx'
 import Navbar from '../components/Home/Navbar.jsx' 
@@ -7,9 +8,11 @@ import { getAllProducts} from '../actions/productAction.js'
 import { fetchCategories} from '../actions/categoryAction.js' 
 
 
-const Products = () => {
+const SearchProduct= () => {
    const dispatch = useDispatch() ; 
-   const {allProducts} = useSelector(state => state.product) ;
+ const location = useLocation()
+
+ const allProducts = location.state
   const { categories } = useSelector((state) => state.category);
   const states = useSelector((state) => state.details?.states);
 
@@ -39,17 +42,6 @@ useEffect(() => {
 }, [selectedCategory, selectedSubCategory, selectedState, allProducts]);
 
   
-    useEffect(() => {
-    const getProduct = async  () => {
-    
-     const productDB = await  dispatch(getAllProducts()) ;
-     setProducts(productDB)
-     await dispatch(fetchCategories()) ;
-      
-    }
-
-    getProduct()
-    } , [])
 
 
   const [products , setProducts] = useState(allProducts || []) 
@@ -84,4 +76,4 @@ useEffect(() => {
   )
 }
 
-export default Products
+export default SearchProduct

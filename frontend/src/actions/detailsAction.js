@@ -7,6 +7,7 @@ export function fetchStates() {
   return async (dispatch) => {
     try {
       const response = await apiConnector('GET', detailsEndpoints.GET_STATES);
+      
       dispatch(setStates(response.data));
     } catch (error) {
       toast.error("Failed to load states");
@@ -17,9 +18,12 @@ export function fetchStates() {
 export function fetchColleges(stateId) {
   return async (dispatch) => {
     try {
+
       const response = await apiConnector('GET', `${detailsEndpoints.GET_COLLEGE}${stateId}`);
+      
       dispatch(setColleges(response.data.data));
     } catch (error) {
+      console.log(error)
       toast.error("Failed to load colleges");
     }
   };

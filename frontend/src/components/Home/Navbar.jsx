@@ -4,7 +4,10 @@ import { useSelector , useDispatch } from 'react-redux'
 import logo from '../../assets/logo.png'
 import {getProfile} from '../../actions/userAction.js'
 import { SocketContext } from '../../context/SocketContext';
-
+import { fetchCategories} from '../../actions/categoryAction.js'
+import { getAllProducts , searchProducts  } from '../../actions/productAction.js' 
+import { fetchStates , fetchColleges } from '../../actions/detailsAction.js' 
+import {toast} from 'react-hot-toast' 
 const Navbar = () => {
 
   const socket = useContext(SocketContext);
@@ -14,6 +17,7 @@ const Navbar = () => {
   const [profileModal , setProfileModal] = useState(false)
   const [drawerProfileModal , setDrawerProfileModal] = useState(false)
   const [user , setUser] = useState(userDB || {})
+  const [query , setQuery] = useState('')
    const dispatch = useDispatch() ; 
    const token = localStorage.getItem('token')
 
@@ -24,6 +28,7 @@ const Navbar = () => {
         const User =  await dispatch(getProfile(token))
         setUser(User)
        }
+  
    }
      
    getUser() 
@@ -34,6 +39,24 @@ useEffect(() => {
  socket.emit('join', { userId: user?._id });
 
  }, [socket, user])
+ 
+
+ const search = async () => {
+    toast.loading('Searching....')
+     const products =  await dispatch(searchProducts(query)) ;
+     navigate('/searchProducts' , {state:products})
+     toast.dismiss()
+ }
+
+ useEffect(() => {
+ const getDetails = async () => {
+          await dispatch(fetchCategories())
+       await dispatch(fetchStates())
+       await dispatch(getAllProducts())
+
+   }
+   getDetails()
+ }, [])
  
 
   const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen)
@@ -51,8 +74,8 @@ useEffect(() => {
         {/* Desktop Search + Links */}
         <div className='hidden md:flex items-center gap-6'>
           <div className='flex shadow shadow-gray-500 rounded-lg'>
-            <input type="text" placeholder='Search here' className='py-1 bg-white px-4 rounded-l-lg' />
-            <button className='px-3 bg-black text-white rounded-r-lg'><i className="ri-search-line"></i></button>
+            <input  value={query} onChange={(e) => setQuery(e.target.value)} type="text" placeholder='Search here' className='py-1 bg-white px-4 rounded-l-lg' />
+            <button onClick={search} className='px-3 bg-black text-white rounded-r-lg'><i className="ri-search-line"></i></button>
           </div>
           <button onClick={() => navigate('/products')} className='text-white font-semibold hover:text-blue-400'>Products</button>
           <button onClick={() => navigate('/sell')} className='text-white font-semibold hover:text-blue-400'>Sell</button>
@@ -85,8 +108,10 @@ useEffect(() => {
 
         {/* Drawer Items */}
         <div className='flex flex-col gap-6 px-6'>
-
-          <input type="text" placeholder='Search here' className='py-2 px-4 bg-white text-black rounded-lg' />
+              <div className='flex shadow shadow-gray-500 rounded-lg'>
+            <input  value={query} onChange={(e) => setQuery(e.target.value)} type="text" placeholder='Search here' className='py-1 bg-white px-4 rounded-l-lg' />
+            <button onClick={search} className='px-3 bg-black text-white rounded-r-lg'><i className="ri-search-line"></i></button>
+          </div>
           {user?.fullName &&  (
             <div className='p-2 px-4 flex gap-3 items-center '>
                 <img src={user?.profilePic || ''} className='h-12 w-12 rounded-full object-cover' alt="avatar" />

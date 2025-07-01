@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { updateProduct, deleteProduct } from '../../actions/productAction.js';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
+import { updateProduct, deleteProduct } from '../../actions/productAction';
 
-const EditModal = ({ product, token, onClose }) => {
+const EditModal = ({ product,token ,  onClose }) => {
+
   const dispatch = useDispatch();
+  const { categories } = useSelector((state) => state.category);
+  const states = useSelector((state) => state.details?.states || []);
 
+  const [selectedCategory, setSelectedCategory] = useState(product.category);
+  const [selectedSubCategory, setSelectedSubCategory] = useState(product.subcategory || '');
+  const [subCategories, setSubCategories] = useState([]);
   const [formData, setFormData] = useState({
     title: product.title,
     price: product.price,
@@ -14,12 +20,22 @@ const EditModal = ({ product, token, onClose }) => {
     location: product.location,
   });
 
+  useEffect(() => {
+    const found = categories.find((cat) => cat._id === selectedCategory);
+    setSubCategories(found?.subcategories || []);
+  }, [selectedCategory, categories]);
+
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleUpdate = async () => {
-    await dispatch(updateProduct(product._id, formData, token));
+    const dataToUpdate = {
+      ...formData,
+      category: selectedCategory,
+      subcategory: selectedSubCategory,
+    };
+    await dispatch(updateProduct(product._id, dataToUpdate, token));
     toast.success("Product updated");
     onClose();
   };
@@ -31,83 +47,148 @@ const EditModal = ({ product, token, onClose }) => {
   };
 
   return (
-    <div className="absolute inset-0 min-h-screen top-0 py-10   bg-[#080b19f2] z-50 flex justify-center items-center">
-      <div className="bg-[#0f172a] text-white p-6 rounded-xl mt-20  w-96 space-y-4 shadow-lg shadow-cyan-400">
-        <h2 className="text-xl font-bold text-center text-cyan-400">Edit Product</h2>
+    <div className="h-screen w-screen overflow-y-scroll p-2   fixed inset-0 z-50 bg-black bg-opacity-70 flex justify-center items-center">
+
+      <div className='mt-40  h-full w-full justify-center flex items-center '>
+          <div className="bg-[#0f172a]  text-white w-full max-w-lg p-6 rounded-xl space-y-4 shadow-xl">
+        <h2 className="text-xl font-bold text-center mt-50  text-cyan-400">Edit Product</h2>
 
         {/* Title */}
         <div>
-          <label className="block text-sm mb-1">Title</label>
+          <label className="text-sm mb-1 block">Title</label>
           <input
+            type="text"
             name="title"
             value={formData.title}
             onChange={handleChange}
-            className="w-full bg-transparent border border-cyan-400 px-3 py-2 rounded text-white placeholder-gray-400"
-            placeholder="Product title"
+            placeholder="Enter product title"
+            className="w-full bg-slate-800 border border-cyan-400 rounded px-3 py-2"
           />
         </div>
 
-        {/* Price */}
+        {/* Category */}
         <div>
-          <label className="block text-sm mb-1">Price</label>
-          <input
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            className="w-full bg-transparent border border-cyan-400 px-3 py-2 rounded text-white placeholder-gray-400"
-            placeholder="₹ Price"
-          />
+          <label className="text-sm mb-1 block">Category</label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => {
+              setSelectedCategory(e.target.value);
+              setSelectedSubCategory('');
+            }}
+            className="w-full bg-slate-800 border border-cyan-400 rounded px-3 py-2"
+          >
+            <option value="">Select category</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
         </div>
+
+        {/* Subcategory */}
+        {subCategories.length > 0 && (
+          <div>
+            <label className="text-sm mb-1 block">Subcategory</label>
+            <select
+              value={selectedSubCategory}
+              onChange={(e) => setSelectedSubCategory(e.target.value)}
+              className="w-full bg-slate-800 border border-cyan-400 rounded px-3 py-2"
+            >
+              <option value="">Select subcategory</option>
+              {subCategories.map((sub) => (
+                <option key={sub._id} value={sub._id}>
+                  {sub.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Condition */}
         <div>
-          <label className="block text-sm mb-1">Condition</label>
-          <input
+          <label className="text-sm mb-1 block">Condition</label>
+          <select
             name="condition"
             value={formData.condition}
             onChange={handleChange}
-            className="w-full bg-transparent border border-cyan-400 px-3 py-2 rounded text-white placeholder-gray-400"
-            placeholder="e.g. New, Used"
-          />
+            className="w-full bg-slate-800 border border-cyan-400 rounded px-3 py-2"
+          >
+            <option value="">Select condition</option>
+            <option value="New">New</option>
+            <option value="Like New">Like New</option>
+            <option value="Used">Used</option>
+          </select>
         </div>
 
         {/* Location */}
         <div>
-          <label className="block text-sm mb-1">Location</label>
-          <input
+          <label className="text-sm mb-1 block">Location (State)</label>
+          <select
             name="location"
             value={formData.location}
             onChange={handleChange}
-            className="w-full bg-transparent border border-cyan-400 px-3 py-2 rounded text-white placeholder-gray-400"
-            placeholder="City or Area"
+            className="w-full bg-slate-800 border border-cyan-400 rounded px-3 py-2"
+          >
+            <option value="">Select state</option>
+            {states.map((state, idx) => (
+              <option key={idx} value={state.id}>
+                {state.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Price */}
+        <div>
+          <label className="text-sm mb-1 block">Price (₹)</label>
+          <input
+            type="number"
+            name="price"
+            value={formData.price}
+            onChange={handleChange}
+            placeholder="Enter price"
+            className="w-full bg-slate-800 border border-cyan-400 rounded px-3 py-2"
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-sm mb-1">Description</label>
+          <label className="text-sm mb-1 block">Description</label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
-            className="w-full bg-transparent border border-cyan-400 px-3 py-2 rounded text-white placeholder-gray-400"
-            placeholder="Write about the product..."
             rows={3}
+            placeholder="Product details..."
+            className="w-full bg-slate-800 border border-cyan-400 rounded px-3 py-2"
           />
         </div>
 
-        <div className="flex justify-between mt-4">
-          <button onClick={handleUpdate} className="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded text-white">
+        {/* Buttons */}
+        <div className="flex justify-between pt-2">
+          <button
+            onClick={handleUpdate}
+            className="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded text-white"
+          >
             Update
           </button>
-          <button onClick={handleDelete} className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white">
+          <button
+            onClick={handleDelete}
+            className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white"
+          >
             Delete
           </button>
-          <button onClick={onClose} className="text-gray-400 hover:text-white px-4 py-2">
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white px-4 py-2"
+          >
             Cancel
           </button>
         </div>
       </div>
+      </div>
+     
     </div>
   );
 };

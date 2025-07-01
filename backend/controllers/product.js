@@ -13,6 +13,7 @@ export const createProduct = async (req, res) => {
       price,
       condition,
       category,
+      subcategory,
       location,
       liveImageUrl // optional
     } = req.body;
@@ -42,6 +43,7 @@ export const createProduct = async (req, res) => {
       price,
       condition,
       category,
+      subcategory,
       location,
       postedBy: user._id,
       college: user.college,
@@ -165,3 +167,41 @@ export const getAllProducts = async (req, res) => {
     });
   }
 };
+
+// ========== TEXT SEARCH PRODUCTS ==========
+export const searchProducts = async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    if (!query || query.trim() === "") {
+      return res.status(400).json({ success: false, message: "Search query is required" });
+    }
+
+    const searchRegex = new RegExp(query, "i");
+
+    const products = await Product.find({
+      $or: [
+        { title:       { $regex: searchRegex } },
+        { description: { $regex: searchRegex } },
+      
+      ]
+    })
+    .populate('postedBy', 'fullName college profilePic year branch')
+    .sort({ createdAt: -1 })
+    .limit(20);
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      products
+    });
+  } catch (error) {
+    console.error("Text search failed:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
+  }
+};
+

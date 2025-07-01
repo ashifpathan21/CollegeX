@@ -1,17 +1,29 @@
-import React, { useContext , useEffect } from 'react';
+import React, { useContext , useState , useEffect } from 'react';
 import Navbar from '../components/Home/Navbar.jsx';
 import { useSelector , useDispatch } from 'react-redux'
 import {useNavigate} from 'react-router-dom'
-
+import EditProfileModal from '../components/User/EditProfileModal.jsx'
+import { updateProfile } from "../actions/userAction.js";
 
 const Profile = () => {
       const navigate = useNavigate()
       const user = useSelector((state) => state.user.user)
-   
+      const [editModal , setEditModal] = useState(false)
+      const dispatch = useDispatch()
+      const onClose = () => setEditModal(false) 
+     const token = localStorage.getItem('token')
+     
   return (
-    <div className='min-h-screen w-screen bg-[#080b19f2]  ' >
+    <div className='min-h-screen relative w-screen bg-[#080b19f2]  ' >
         <Navbar/>
         
+        {
+          editModal && <EditProfileModal  user={user} onClose={onClose}  onSave={(updatedData) => {
+      dispatch(updateProfile(updatedData , token)); // your redux action
+      setEditModal(false);
+    }} />
+        }
+
      <div className='px-4 flex flex-col md:flex-row lg:flex-row gap-10 '>
          <div className='flex items-center gap-10  w-screen h-full p-4 mt-5  '>
            {/* left side image  */}
@@ -31,7 +43,7 @@ const Profile = () => {
         </div>
 
         <div className='w-full flex justify-center items-center '>
-              <button className=' rounded-2xl  px-6 w-full  hover:shadow-lg duration-200  text-white shadow shadow-cyan-300 h-auto inline  p-3 '>
+              <button onClick={() => setEditModal(true)} className=' rounded-2xl  px-6 w-full  hover:shadow-lg duration-200  text-white shadow shadow-cyan-300 h-auto inline  p-3 '>
                  Edit Profile 
              </button>
        </div>

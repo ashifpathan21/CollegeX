@@ -17,7 +17,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // or your frontend URL
+  origin: ['http://localhost:5173', "https://collegex-qzm7.onrender.com"], // or your frontend URL
   credentials: true,
 }));
 app.use(express.json());

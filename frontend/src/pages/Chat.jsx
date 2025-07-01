@@ -5,7 +5,7 @@ import { SocketContext } from '../context/SocketContext';
 import CryptoJS from 'crypto-js';
 import Navbar from '../components/Home/Navbar.jsx';
 import { ShieldCheck, MessageSquareLock, Ban } from 'lucide-react'; // optional icons
-import { setAllMessages } from '../slices/messageSlice';
+import { setAllMessages } from '../slices/messageSlice.js';
 import { getMessages, sendMessage, seenMessages } from '../actions/messageAction';
 import toast from "react-hot-toast";
 
